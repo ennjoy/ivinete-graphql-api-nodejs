@@ -1,5 +1,5 @@
 {
-    "env": {
-        "MONGO_CONNECT": "mongodb+srv://ivinete:K2ZrAeg2TotRdGA6@cluster0.x2ny9.mongodb.net/ivinete?retryWrites=true&w=majority"
-    }
+	"env": {
+		"MONGO_CONNECT": ""
+	}
 }
