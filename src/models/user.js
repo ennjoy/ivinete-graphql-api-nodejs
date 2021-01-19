@@ -33,11 +33,11 @@ const schema = new mongoose.Schema({
 	},
 	photo: {
 		type: String,
-		default: null
+		ref: 'photos'
 	},
 	cover: {
 		type: String,
-		default: null
+		ref: 'photos'
 	},
 	sex: {
 		type: Number,

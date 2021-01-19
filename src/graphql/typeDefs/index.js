@@ -1,18 +1,18 @@
-import { buildSchema } from 'graphql'
+import { gql } from 'apollo-server-express'
 
-const schema = buildSchema(`
-	type Auth {
+const typeDefs = gql`
+    type Auth {
 		id: ID!
-		token: String!
-		tokenExpiration: Int!
+		access_token: String!
+		expiresIn: Int!
 	}
 
-	input AuthInput {
+	input LoginInput {
 		phone: String!
 		password: String!
 	}
 
-	type Users {
+	type User {
 		id: ID!
 		first_name: String!
 		last_name: String!
@@ -23,7 +23,7 @@ const schema = buildSchema(`
 		verified: Boolean
 	}
 
-	input UsersInput {
+	input UserInput {
 		phone: String!
 		email: String!
 		password: String!
@@ -33,7 +33,7 @@ const schema = buildSchema(`
 		type: Int!
 	}
 
-	type Pages {
+	type Page {
 		id: ID!
 		user_id: ID!
 		name: String!
@@ -43,7 +43,7 @@ const schema = buildSchema(`
 		verified: Boolean
 	}
 
-	input PagesInput {
+	input PageInput {
 		name: String!
 		about: String
 	}
@@ -57,7 +57,7 @@ const schema = buildSchema(`
 	}
 
 	input WallInput {
-		owner_id: ID!
+		owner_id: ID
 		text: String!       
 	}
 
@@ -71,32 +71,27 @@ const schema = buildSchema(`
 		date: String!
 	}
 
-	type Photos {
+	type Photo {
 		id: ID!
 		owner_id: ID!
 		photo: String!
 		date: String!
 	}
 
-	type RootQuery {
-		users(id: String): Users
-		pagesFindById(id: String): Pages
-		wall(owner_id: String): [Wall]
-		audio(owner_id: String): [Audio]
-		photos(owner_id: String): [Photos]
+	type Query {
+		userById(id: ID): User
+		pageById(id: ID): Page
+		wall(owner_id: ID): [Wall]
+		audio(owner_id: ID): [Audio]
+		photo(owner_id: ID): [Photo]
 	}
 
-	type RootMutation {
-		login(input: AuthInput): Auth
-		signup(input: UsersInput): Auth
-		pagesCreate(input: PagesInput): Pages
+	type Mutation {
+		login(input: LoginInput): Auth
+		signup(input: UserInput): Auth
+		pageCreate(input: PageInput): Page
 		wallPost(input: WallInput): Wall
 	}
+`
 
-	schema {
-		query: RootQuery
-		mutation: RootMutation
-	}
-`)
-
-export default schema
+export default typeDefs

@@ -1,34 +1,34 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-import Users from '../../models/users.js'
+const login = async (_, args, context) => {
 
-const login = async (args) => {
+    const user = await context.models.User.findOne({ phone: args.input.phone })
 
-    const user = await Users.findOne({ phone: args.input.phone })
     if (!user) {
         throw new Error('User does not exist!')
     }
 
     const isEqual = await bcrypt.compare(args.input.password, user.password)
+    
     if (!isEqual) {
         throw new Error('Password is incorrect!')
     }
 
     const token = jwt.sign({ id: user.id, phone: user.phone }, 'somesupersecretkey', {
-        expiresIn: '1h'
+        expiresIn: '24h'
     })
 
     return {
         id: user.id,
-        token: token,
-        tokenExpiration: 1
+        access_token: token,
+        expiresIn: 24
     }
 }
 
-const signup = async (args) => {
+const signup = async (_, args, context) => {
     try {
-        const validPhone = await Users.findOne({ phone: args.input.phone })
+        const validPhone = await context.models.User.findOne({ phone: args.input.phone })
         
         if (validPhone) {
             throw new Error('User exists already.')
@@ -36,7 +36,7 @@ const signup = async (args) => {
 
         const hashedPassword = await bcrypt.hash(args.input.password, 12)
 
-        const users = new Users({
+        const user = new context.models.User({
             phone: args.input.phone,
             email: args.input.email,
             password: hashedPassword,
@@ -44,23 +44,27 @@ const signup = async (args) => {
             last_name: args.input.last_name
         })
 
-        const user = await users.save()
+        const result = await user.save()
         
-        const token = jwt.sign({ id: user.id, phone: user.phone }, 'somesupersecretkey', {
-            expiresIn: '1h'
+        const token = jwt.sign({ id: result.id, phone: result.phone }, 'somesupersecretkey', {
+            expiresIn: '24h'
         })
     
         return {
-            id: user.id,
-            token: token,
-            tokenExpiration: 1
+            id: result.id,
+            access_token: token,
+            expiresIn: 1
         }
     } catch (error) {
         throw error
     }
 }
 
-export default {
+const AuthMutation = {
     login,
     signup
+}
+
+export {
+    AuthMutation
 }
