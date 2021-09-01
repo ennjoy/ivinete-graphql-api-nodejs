@@ -1,4 +1,4 @@
-# IVinete Graphql API with Nodejs
+# IVinete Graphql API
 
 ## Project setup
 ```
